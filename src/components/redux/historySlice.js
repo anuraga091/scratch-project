@@ -1,3 +1,4 @@
+// src/components/redux/historySlice.js
 import { createSlice } from '@reduxjs/toolkit';
 
 const initialState = [];
@@ -12,11 +13,8 @@ const historySlice = createSlice({
     clearHistory: () => {
       return [];
     },
-    replayHistory: (state, action) => {
-      return state.slice(0, action.payload);
-    }
   },
 });
 
-export const { addHistory, clearHistory, replayHistory } = historySlice.actions;
+export const { addHistory, clearHistory } = historySlice.actions;
 export default historySlice.reducer;

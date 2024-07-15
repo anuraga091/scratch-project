@@ -8,10 +8,12 @@ import {
   setMessage as setMessageAction,
   setThinkMessage as setThinkMessageAction,
   setSize as setSizeAction,
-  toggleVisibility as toggleVisibilityAction
+  toggleVisibility as toggleVisibilityAction,
+  setWaitDuration as setWaitDurationAction,
 } from '../components/redux/spriteSlice';
-import { addHistory } from '../components/redux/historySlice';
 import DraggableItem from "./DraggableItem";
+import ExecuteActions from "./ExecuteActions";
+
 
 export default function Sidebar() {
   const dispatch = useDispatch();
@@ -29,7 +31,7 @@ export default function Sidebar() {
   const [thinkDuration, setThinkDuration] = useState(2)
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const [sizeChange, setSizeChange] = useState(20);
-
+  const [waitDuration, setWaitDuration] = useState(1);
 
 
 
@@ -52,12 +54,9 @@ export default function Sidebar() {
     };
   }, [sprite.position]);
 
-  const handleGreenFlagClick = () => {
-
-  }
-
-  const handleSpriteClick = () => {
-
+  
+  const handleWait = () =>{
+    dispatch(setWaitDurationAction(waitDuration));
   }
 
 
@@ -120,22 +119,16 @@ export default function Sidebar() {
       <div className="font-bold"> {"Events"} </div>
 
       <DraggableItem type="flag" props={{}}>
-        <div className="flex flex-row flex-wrap bg-yellow-500 text-white px-2 py-1 my-2 text-sm cursor-pointer"
-          onClick={handleGreenFlagClick}
-        >
-          {"When "}
-          <Icon name="flag" size={15} className="text-green-600 mx-2" />
-          {"clicked"}
-        </div>
+        <ExecuteActions/>
       </DraggableItem>
 
-      <DraggableItem type="sprite" props={{}}>
+      {/* <DraggableItem type="sprite" props={{}}>
         <div className="flex flex-row flex-wrap bg-yellow-500 text-white px-2 py-1 my-2 text-sm cursor-pointer"
           onClick={handleSpriteClick}
         >
           {"When this sprite clicked"}
         </div>
-      </DraggableItem>
+      </DraggableItem> */}
 
       {/* ----------------------------------------Motion Section--------------------------------------------- */}
 
@@ -308,13 +301,15 @@ export default function Sidebar() {
       {/* --------------------------------------Control Section---------------------------------------------- */}
 
       <div className="font-bold"> {"Control"} </div>
-      <DraggableItem type='wait' props={{ message, setMessage }}>
-        <div className="bg-yellow-600 flex flex-row flex-wrap text-white px-2 py-1 my-2 text-sm cursor-pointer">
+      <DraggableItem type='wait' props={{ waitDuration, setWaitDuration, handleWait }}>
+        <div className="bg-yellow-600 flex flex-row flex-wrap text-white px-2 py-1 my-2 text-sm cursor-pointer"
+          onClick={handleWait}
+        >
           <span>wait</span>
           <input
-            type="text"
-            value={message}
-            onChange={(e) => setMessage(e.target.value)}
+            type="number"
+            value={waitDuration}
+            onChange={(e) => setWaitDuration(e.target.value)}
             className="bg-white-300 text-black rounded text-center mx-2 w-12 text-sm"
           />
           <span>seconds</span>

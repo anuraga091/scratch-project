@@ -9,14 +9,16 @@ import {
   setThinkMessage as setThinkMessageAction,
   setSize as setSizeAction,
   toggleVisibility as toggleVisibilityAction,
+  setWaitDuration as setWaitDurationAction,
 } from '../components/redux/spriteSlice';
-import { addHistory } from '../components/redux/historySlice';
+//import { addHistory } from '../components/redux/historySlice';
+import { addCombinedAction } from '../components/redux/combinedActionsSlice';
+
 
 
 const MidArea = () => {
   const sprite = useSelector(state => state.sprite);
   const [droppedItems, setDroppedItems] = useState([]);
-  console.log(sprite)
 
   const [inputX, setInputX] = useState(sprite.position.x);
   const [inputY, setInputY] = useState(sprite.position.y);
@@ -34,6 +36,7 @@ const MidArea = () => {
   const [waitDuration, setWaitDuration] = useState(1);
 
   const dispatch = useDispatch();
+
 
   useEffect(() => {
     const updateMousePosition = (e) => {
@@ -70,18 +73,18 @@ const MidArea = () => {
   }));
 
   const addDroppedItem = (item) => {
-    console.log(item)
     setDroppedItems(prevItems => [
       ...prevItems,
       { id: prevItems.length, type: item.type, props: { ...item.props } }
     ]);
+    dispatch(addCombinedAction(item));
+
   };
 
-  const handleAction = (type, payload) => {
-    dispatch(addHistory({ type, payload, timestamp: Date.now() }));
-  };
+  // const handleAction = (type, payload) => {
+  //   dispatch(addHistory({ type, payload, timestamp: Date.now() }));
+  // };
 
-  console.log(droppedItems)
 
 
   const renderDroppedItem = (item, index) => {
@@ -92,7 +95,7 @@ const MidArea = () => {
           <div key={index} className="bg-blue-500 flex flex-row flex-wrap text-white px-2 py-1 my-2 text-sm cursor-pointer w-48"
             onClick={() => {
               dispatch(moveSpriteAction({ steps: Number(steps) }));
-              handleAction('move-steps', { steps: Number(steps) });
+              //handleAction('move-steps', { steps: Number(steps) });
             }}  
           >
             <span>move</span>
@@ -110,7 +113,7 @@ const MidArea = () => {
           <div key={index} className="bg-blue-500 flex flex-row flex-wrap text-white px-2 py-1 my-2 text-sm cursor-pointer w-48"
             onClick={() => {
               dispatch(turnSpriteAction({ degrees: -Number(leftDegree) }))
-              handleAction('rotate-sprite-left', { degrees: -Number(leftDegree) });
+              //handleAction('rotate-sprite-left', { degrees: -Number(leftDegree) });
             }}
           >
             <span>Turn</span>
@@ -129,7 +132,7 @@ const MidArea = () => {
           <div key={index} className="bg-blue-500 flex flex-row flex-wrap text-white px-2 py-1 my-2 text-sm cursor-pointer w-48"
             onClick={() => {
               dispatch(turnSpriteAction({ degrees: Number(rightDegree) }));
-              handleAction('rotate-sprite-right', { degrees: Number(rightDegree) });
+              //handleAction('rotate-sprite-right', { degrees: Number(rightDegree) });
             }}
           >
             <span>Turn</span>
@@ -148,7 +151,7 @@ const MidArea = () => {
           <div key={index} className="bg-blue-500 flex flex-row flex-wrap text-white px-2 py-1 my-2 text-sm cursor-pointer w-52"
             onClick={() => {
               dispatch(setPositionAction({ x: parseFloat(inputX), y: parseFloat(inputY) }));
-              handleAction('go-to-position', { x: parseFloat(inputX), y: parseFloat(inputY)});
+              //handleAction('go-to-position', { x: parseFloat(inputX), y: parseFloat(inputY)});
             }}
           >
             <span>go to x:</span>
@@ -177,10 +180,10 @@ const MidArea = () => {
                 const newX = Math.random() * 300;
                 const newY = Math.random() * 300;
                 dispatch(setPositionAction({ x: newX, y: newY }));
-                handleAction('go-to-random-position', { x: newX, y: newY });
+                //handleAction('go-to-random-position', { x: newX, y: newY });
               } else if (selectedOption === 'mousePointer') {
                 dispatch(setPositionAction({ x: mousePosition.x, y: mousePosition.y }));
-                handleAction('go-to-random-position', { x: mousePosition.x, y: mousePosition.y });
+                //handleAction('go-to-random-position', { x: mousePosition.x, y: mousePosition.y });
               }
             }}
           >
@@ -201,7 +204,7 @@ const MidArea = () => {
           <div key={index} className="bg-purple-500 flex flex-row flex-wrap text-white px-2 py-1 my-2 text-sm cursor-pointer w-56"
             onClick={() => {
               dispatch(setMessageAction({ message, duration }));
-              handleAction('say', { message, duration });
+              //handleAction('say', { message, duration });
             }}
           >
             <span>say</span>
@@ -228,7 +231,7 @@ const MidArea = () => {
           <div key={index} className="bg-purple-500 flex flex-row flex-wrap text-white px-2 py-1 my-2 text-sm cursor-pointer w-56"
             onClick={() => {
               dispatch(setThinkMessageAction({ thinkMessage, thinkDuration }));
-              handleAction('think', { thinkMessage, thinkDuration });
+              //handleAction('think', { thinkMessage, thinkDuration });
             }}
           >
             <span>think</span>
@@ -244,7 +247,9 @@ const MidArea = () => {
               type="number"
               value={thinkDuration}
               defaultValue={item.props.thinkDuration || 2}
-              onChange={(e) => setThinkDuration(e.target.value)}
+              onChange={(e) => {
+                setThinkDuration(e.target.value)
+              }}
               className="bg-white-300 text-black rounded text-center w-8 mx-2 text-sm"
             />
             <span>seconds</span>
@@ -255,7 +260,7 @@ const MidArea = () => {
           <div key={index} className="bg-purple-500 flex flex-row flex-wrap text-white px-2 py-1 my-2 text-sm cursor-pointer w-52"
             onClick={() => {
               dispatch(setSizeAction(Number(sizeChange)));
-              handleAction('change-size', { sizeChange });
+              //handleAction('change-size', { sizeChange });
             }}
           >
             <span>change size by</span>
@@ -271,28 +276,23 @@ const MidArea = () => {
         );
       case 'visible':
         return (
-          <div key={index} className="bg-purple-500 flex flex-row flex-wrap text-white px-2 py-1 my-2 text-sm cursor-pointer w-52"
+          <div key={index} className="bg-purple-500 flex flex-row flex-wrap text-white px-2 py-1 my-2 text-sm cursor-pointer w-16"
             onClick={() => {
-              dispatch(toggleVisibilityAction(visible));
-              handleAction('visible', { visible });
+              dispatch(toggleVisibilityAction(!sprite.visible));
+              //handleAction('visible', { visible: !sprite.visible });
             }}
           >
-            <span>set visibility to</span>
-            <select
-              className="mx-2 bg-yellow-400 text-white font-bold rounded text-center cursor-pointer"
-              value={visible}
-              defaultValue={item.props.visible || true}
-              onChange={(e) => setVisible(e.target.value === 'true')}
-            >
-              <option value="true">Visible</option>
-              <option value="false">Hidden</option>
-            </select>
-            
-          </div>
+          <span>{sprite.visible ? 'hide' : 'show'}</span>
+        </div>
         );
       case 'wait':
         return (
-          <div key={index} className="bg-yellow-600 flex flex-row flex-wrap text-white px-2 py-1 my-2 text-sm cursor-pointer w-52">
+          <div key={index} className="bg-yellow-600 flex flex-row flex-wrap text-white px-2 py-1 my-2 text-sm cursor-pointer w-52"
+            onClick={() => {
+              dispatch(setWaitDurationAction(Number(waitDuration)))
+              //handleAction('wait', { waitDuration });
+            }}
+          >
             <span>wait</span>
             <input
               type="number"
@@ -300,6 +300,7 @@ const MidArea = () => {
               onChange={(e) => setWaitDuration(e.target.value)}
               className="bg-white-300 text-black rounded text-center mx-2 w-8 text-sm"
             />
+            
             <span>seconds</span>
           </div>
         );

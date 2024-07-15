@@ -40,7 +40,7 @@ export default function CatSprite() {
   const catStyle = {
     transform: `translate(${position.x}px, ${position.y}px) rotate(${rotation}deg) scale(${size / 100})`,
     display: visible ? 'block' : 'none',
-    position: 'absolute'  // Ensure the sprite is positioned correctly within the container
+    position: 'absolute' 
   };
 
   return (
